@@ -2,15 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace endgame
+namespace endgame.Content
 {
-    internal class bad_guy
+    internal class jef
     {
         private List<Texture2D> _textures;
         private Vector2 _speed;
@@ -19,9 +17,12 @@ namespace endgame
         private SpriteEffects _direction;
 
 
-        public bad_guy(List<Texture2D> textures, Rectangle location)
-        {
+        private int _health;
 
+
+
+        public jef(List<Texture2D> textures, Rectangle location)
+        {
             _textures = textures;
             _speed = new Vector2(0, 2);
             _location = location;
@@ -29,22 +30,16 @@ namespace endgame
             _direction = SpriteEffects.None;
 
 
+            _health = 8;
         }
-
-
-
         public void draw(SpriteBatch spriteBatch)
         {
-
             spriteBatch.Draw(_textures[_textureIndex], _location, null, Color.White, 0f, Vector2.Zero, _direction, 1f);
         }
-
         public void update()
         {
-
             _location.X += (int)_speed.X;
             _location.Y += (int)_speed.Y;
-
 
             if (_location.Left < 0 || _location.Right > 800)
             {
@@ -53,18 +48,25 @@ namespace endgame
 
                 _direction = _speed.X < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             }
-            if (_location.Top < 0 && _speed.Y <0|| _location.Bottom > 600)
+            if ((_location.Top < 0 && _speed.Y < 0) || _location.Bottom > 600)
             {
                 _speed.Y = -_speed.Y;
-
                 _speed.X = 2;
             }
-           
         }
         public Rectangle Location
         {
             get { return _location; }
         }
+
+
+        public int Health
+        {
+            get { return _health; }
+            set { _health = value; }
+        }
+
+
 
     }
 }
