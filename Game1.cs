@@ -31,7 +31,7 @@ namespace endgame
 
         List<bad_guy> goblins;
         int basehelth = 3;
-        int coins = 48;
+        int coins = 0;
         SpriteFont font1;
         List<boss> bosstexlist;
         List<Texture2D> bostex;
@@ -41,6 +41,9 @@ namespace endgame
         Texture2D crossbow;
         Rectangle crossrec;
         bool crossbowactive = false;
+
+        List<Infinitegob> infinitegobtexlist;
+        List<Texture2D> infgobtex;
 
         public Game1()
         {
@@ -60,6 +63,12 @@ namespace endgame
             gobtex = new List<Texture2D>();
             goblins = new List<bad_guy>();
             bullettexlist = new List<bullet>();
+            
+            infgobtex = new List<Texture2D>();
+           
+           
+            infinitegobtexlist = new List<Infinitegob>();
+
 
             basehelth = 3;
 
@@ -85,8 +94,10 @@ namespace endgame
             font1 = Content.Load<SpriteFont>("coinword");
             bostex.Add(Content.Load<Texture2D>("boss/bossgoblin"));
             crossbow = Content.Load<Texture2D>("crossbow2");
+          
+            infgobtex.Add(Content.Load<Texture2D>("ingob"));
 
-           
+
             crossrec = new Rectangle(250, 100, 50, 50);
 
             for (int i = 0; i < 30; i++)
@@ -105,7 +116,18 @@ namespace endgame
             {
                 jefftexlist.Add(new jef(jefftex, new Rectangle(0, 0 - (50 * i)
                     , 40, 40)));
+                
+                
             }
+
+            for (int i = 0; i < 100; i++)
+            {
+                infinitegobtexlist.Add(new Infinitegob(infgobtex, new Rectangle(0, 0 - (50 * i)
+                    , 40, 40)));
+            }
+
+
+
         }
 
         private MouseState _previousMouseState;
@@ -153,8 +175,25 @@ namespace endgame
                     }
                 }
             }
+            if (infinitegobtexlist.Count == 0)
+            {
+                for(int i = 0; i < infinitegobtexlist.Count; i++)
+                {
+                    infinitegobtexlist[i].update();
+                    if (homebaserec.Intersects(infinitegobtexlist[i].Location))
+                    {
+                        basehelth -= 1;
+                        infinitegobtexlist.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+
+            }
+
             
-            
+
+
 
 
             if (basehelth <= 0)
@@ -265,6 +304,8 @@ namespace endgame
                     {
                         if (bullettexlist[i]._location.Intersects(jefftexlist[j].Location))
                         {
+                            
+
                             coins += 1;
                             jefftexlist[j].Health -= 1;
                             bullettexlist.RemoveAt(i);
@@ -286,6 +327,31 @@ namespace endgame
                 }
             }
 
+            if (bullettexlist.Count > 0 && goblins.Count == 0 && bosstexlist.Count == 0 && infinitegobtexlist.Count > 0)
+            {
+                
+
+                for (int i = 0; i < bullettexlist.Count; i++)
+                {
+                    for (int j = 0; j < infinitegobtexlist.Count; j++)
+                    {
+                        if (bullettexlist[i]._location.Intersects(infinitegobtexlist[j].Location))
+                        {
+                            coins += 1;
+                            infinitegobtexlist[i].update();
+                            bullettexlist.RemoveAt(i);
+                            i--;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            
+
+
+
+
             if (coins >= 50)
             {
                 crossbowvisible = true;
@@ -302,6 +368,7 @@ namespace endgame
             _previousMouseState = mouse;
 
             base.Update(gameTime);
+            this.Window.Title = basehelth + "";
         }
 
         protected override void Draw(GameTime gameTime)
@@ -329,6 +396,15 @@ namespace endgame
                     jefftexlist[i].draw(_spriteBatch);
                 }
             }
+            if (jefftexlist.Count == 0)
+            {
+                for (int i = 0; i < infinitegobtexlist.Count; i++)
+                {
+                    infinitegobtexlist[i].draw(_spriteBatch);
+                }
+            }
+           
+
 
             for (int i = 0; i < bullettexlist.Count; i++)
             {
